@@ -9,8 +9,13 @@ public class FileProcessingSystem {
     }
 
     // 提交文件处理任务
+<<<<<<< Updated upstream
     public Future<String> submitTask(String fileName, String fileOut) {
         return threadPool.submit(new FileTask(fileName,fileOut));
+=======
+    public Future<String> submitTask(String fileName, String fileout) {
+        return threadPool.submit(new FileTask(fileName,fileout));
+>>>>>>> Stashed changes
     }
 
     // 监控线程池状态

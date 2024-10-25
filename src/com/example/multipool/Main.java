@@ -11,10 +11,17 @@ public class Main {
 
         // 提交文件处理任务
         List<Future<String>> futures = new ArrayList<>();
+<<<<<<< Updated upstream
         futures.add(fileProcessingSystem.submitTask("test_data1.csv","test_data1_out.csv"));
         futures.add(fileProcessingSystem.submitTask("test_data2.csv","test_data2_out.csv"));
         futures.add(fileProcessingSystem.submitTask("test_data3.csv","test_data3_out.csv"));
         futures.add(fileProcessingSystem.submitTask("test_data4.csv","test_data4_out.csv"));
+=======
+        futures.add(fileProcessingSystem.submitTask("test_data1.csv","./out/test_data1_out.csv"));
+        futures.add(fileProcessingSystem.submitTask("test_data2.csv","./out/test_data2_out.csv"));
+        futures.add(fileProcessingSystem.submitTask("test_data3.csv","./out/test_data3_out.csv"));
+        futures.add(fileProcessingSystem.submitTask("test_data4.csv","./out/test_data4_out.csv"));
+>>>>>>> Stashed changes
 
         // 监控线程池状态
         fileProcessingSystem.printThreadPoolStatus();
