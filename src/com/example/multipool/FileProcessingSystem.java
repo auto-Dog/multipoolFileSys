@@ -9,8 +9,8 @@ public class FileProcessingSystem {
     }
 
     // 提交文件处理任务
-    public Future<String> submitTask(String fileName) {
-        return threadPool.submit(new FileTask(fileName));
+    public Future<String> submitTask(String fileName, String fileOut) {
+        return threadPool.submit(new FileTask(fileName,fileOut));
     }
 
     // 监控线程池状态

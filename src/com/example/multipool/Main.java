@@ -11,10 +11,10 @@ public class Main {
 
         // 提交文件处理任务
         List<Future<String>> futures = new ArrayList<>();
-        futures.add(fileProcessingSystem.submitTask("file1.txt"));
-        futures.add(fileProcessingSystem.submitTask("file2.txt"));
-        futures.add(fileProcessingSystem.submitTask("file3.txt"));
-        futures.add(fileProcessingSystem.submitTask("file4.txt"));
+        futures.add(fileProcessingSystem.submitTask("test_data1.csv","./out/test_data1_out.csv"));
+        futures.add(fileProcessingSystem.submitTask("test_data2.csv","./out/test_data2_out.csv"));
+        futures.add(fileProcessingSystem.submitTask("test_data3.csv","./out/test_data3_out.csv"));
+        futures.add(fileProcessingSystem.submitTask("test_data4.csv","./out/test_data4_out.csv"));
 
         // 监控线程池状态
         fileProcessingSystem.printThreadPoolStatus();
