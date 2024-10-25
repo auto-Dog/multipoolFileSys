@@ -1,9 +1,7 @@
 package com.example.multipool;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -80,17 +78,72 @@ public class FileTask implements Callable<String> {
         this.writecsvHead(this.outputPath);
     }
 
+    public void safeIO(String readOrWrite){
+
+        if (readOrWrite=="read"){
+            File readerFile = new File(this.inputPath);
+            while(true){        // 读取的文件可能尚未创建，等待
+                if (readerFile.exists()){
+                    break;
+                }
+            }
+            try {
+                FileInputStream fileInputStream = new FileInputStream(readerFile);
+                FileChannel fileChannel = fileInputStream.getChannel();
+                while (true) {  // 读取的文件可能正在被写入
+                    try {
+                        FileLock fileLock = fileChannel.tryLock(0, Long.MAX_VALUE, true);//共享锁
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("有其他线程正在操作该文件，当前线程" + Thread.currentThread().getName());
+                    }
+                }
+                fileInputStream.close();
+            } catch(IOException eio){
+                System.out.println("IOException");
+            }
+            this.readcsv();    // 读操作，注意加文件锁和判断文件是否上锁
+        }
+        else if(readOrWrite=="write"){
+            try {
+                File writerFile = new File(this.outputPath);
+                if (!writerFile.exists()) {
+                    writerFile.createNewFile();
+                }
+                FileOutputStream fileOutputStream = new FileOutputStream(writerFile);
+                FileChannel fileChannel = fileOutputStream.getChannel();
+                while (true) {
+                    try {
+                        FileLock fileLock = fileChannel.tryLock();//独占锁
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("有其他线程正在操作该文件，当前线程" + Thread.currentThread().getName());
+                    }
+                }
+                fileOutputStream.close();
+            } catch(IOException eio){
+                System.out.println("IOException");
+            }
+            this.writecsvHead();
+        }
+        else{
+            System.err.println("Invalid mode for "+readOrWrite);
+        }
+
+    }
 
     @Override
     public String call() throws Exception { // 在此处实现自定义的文件处理函数
         try {
             System.out.println("Processing file: " + this.inputPath);
-            this.readcsv();
+//            this.readcsv();
+            this.safeIO("read");
             // 模拟文件读取
             Thread.sleep(1000);  // 模拟 1 秒的文件读取时间
             // 模拟数据处理
             Thread.sleep(2000);  // 模拟 2 秒的数据处理时间
-            this.writecsvHead();
+            this.safeIO("write");
+//            this.writecsvHead();
             // 返回处理结果
             return "File processed: " + this.outputPath;
         } catch (InterruptedException e) {
